@@ -199,28 +199,28 @@ void CDeferredContext::submit()
 		}
 
 		CASE_GL_CALL(glDeleteBuffers)
-			CASE_GL_CALL(glDeleteFramebuffers)
-			CASE_GL_CALL(glDeleteProgram)
-			CASE_GL_CALL(glDeleteRenderbuffers)
-			CASE_GL_CALL(glDeleteShader)
-			CASE_GL_CALL(glDeleteTextures)
+		CASE_GL_CALL(glDeleteFramebuffers)
+		CASE_GL_CALL(glDeleteProgram)
+		CASE_GL_CALL(glDeleteRenderbuffers)
+		CASE_GL_CALL(glDeleteShader)
+		CASE_GL_CALL(glDeleteTextures)
 
-			CASE_GL_CALL(glGenBuffers)
-			CASE_GL_CALL(glGenFramebuffers)
-			CASE_GL_CALL(glGenTextures)
+		CASE_GL_CALL(glGenBuffers)
+		CASE_GL_CALL(glGenFramebuffers)
+		CASE_GL_CALL(glGenTextures)
 
-			CASE_GL_CALL(glBindFramebuffer)
-			CASE_GL_CALL(glBindTexture)
+		CASE_GL_CALL(glBindFramebuffer)
+		CASE_GL_CALL(glBindTexture)
 
-			CASE_GL_CALL(glFramebufferTexture2D)
+		CASE_GL_CALL(glFramebufferTexture2D)
 
-			CASE_GL_CALL(glTexImage2D)
+		CASE_GL_CALL(glTexImage2D)
 
-			CASE_GL_CALL(glShaderSource)
-			CASE_GL_CALL(glCompileShader)
-			CASE_GL_CALL(glGetShaderiv)
-			CASE_GL_CALL(glAttachShader)
-			CASE_GL_CALL(glLinkProgram)
+		CASE_GL_CALL(glShaderSource)
+		CASE_GL_CALL(glCompileShader)
+		CASE_GL_CALL(glGetShaderiv)
+		CASE_GL_CALL(glAttachShader)
+		CASE_GL_CALL(glLinkProgram)
 
 		case DeferredCommand::allocateBufferMemory:
 		{
