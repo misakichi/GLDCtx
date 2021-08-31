@@ -1,8 +1,4 @@
-#include "pch.h"
 #include "DeferredContext.h"
-
-using namespace mkgl;
-using namespace Graphics;
 
 CDeferredContext::CDeferredContext()
 	: m_bufferStart(nullptr)
@@ -239,12 +235,12 @@ void CDeferredContext::submit()
 			free(freePtr);
 			break;
 		}
-		case DeferredCommand::signalEvent:
-		{
-			System::CSignalEvent* evt = readValue<System::CSignalEvent*>(p);
-			evt->signal();
-			break;
-		}
+		//case DeferredCommand::signalEvent:
+		//{
+		//	System::CSignalEvent* evt = readValue<System::CSignalEvent*>(p);
+		//	evt->signal();
+		//	break;
+		//}
 		case DeferredCommand::addCallback:
 		{
 			auto func = readValue<std::function<void(void)>*>(p);
