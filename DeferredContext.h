@@ -24,6 +24,36 @@ typedef struct _ObjectID {
 	GLuint id = 0;
 } *ObjectID;
 
+enum class Type : int {
+	None,
+	Half,
+	Float,
+	Int8,
+	Int16,
+	Int32,
+	UInt8,
+	UInt16,
+	UInt32,
+	Num,
+};
+
+enum class PrimitiveType : GLenum
+{
+	Points = GL_POINTS,
+	LineStrip = GL_LINE_STRIP,
+	LineLoop = GL_LINE_LOOP,
+	Lines = GL_LINES, 
+	LineStripAdjacency = GL_LINE_STRIP_ADJACENCY,
+	LinesAdjacency = GL_LINES_ADJACENCY,
+	TriangleStrip = GL_TRIANGLE_STRIP,
+	TriangleFan = GL_TRIANGLE_FAN, 
+	Triangles = GL_TRIANGLES,
+	TriangleStripAdjacency = GL_TRIANGLE_STRIP_ADJACENCY, 
+	TrianglesAdjacency = GL_TRIANGLES_ADJACENCY,
+	Patches = GL_PATCHES,
+};
+
+
 enum class BufferTarget : GLenum {
 	Array = GL_ARRAY_BUFFER,
 	Index = GL_ELEMENT_ARRAY_BUFFER,
@@ -56,6 +86,12 @@ enum class DeferredCommand : uint32_t
 	glGenFramebuffers,
 	glGenTextures,
 
+	glVertexAttribPointer,
+	glEnableVertexAttribArray,
+	glDisableVertexAttribArray,
+
+	glDrawArrays,
+
 	glBindFramebuffer,
 	glBindTexture,
 			
@@ -66,8 +102,10 @@ enum class DeferredCommand : uint32_t
 	glShaderSource,
 	glCompileShader,
 	glGetShaderiv,
+	glGetProgramiv,
 	glAttachShader,
 	glLinkProgram,
+	glUseProgram,
 
 	allocateBufferMemory,
 	freeMemory,
@@ -155,16 +193,24 @@ public:
 	REGIST_GEN(glGenFramebuffers, GLsizei, n, ObjectID*, framebuffers)
 	REGIST_GEN(glGenTextures, GLsizei, n, ObjectID*, textures)
 
-	REGIST_FUNC2(glBindTexture, GLenum, target, ObjectID, texture)
+	REGIST_FUNC6(glVertexAttribPointer, GLuint, index, GLint, size, Type, type, int, normalized, GLsizei, stride, const void*, pointer)
+	REGIST_FUNC1(glEnableVertexAttribArray,int,index)
+	REGIST_FUNC1(glDisableVertexAttribArray,int,index)
+
+	REGIST_FUNC3(glDrawArrays, PrimitiveType, mode, int, first, int, count)
+
 	REGIST_FUNC2(glBindFramebuffer, GLenum, target, ObjectID, framebuffer)
+	REGIST_FUNC2(glBindTexture, GLenum, target, ObjectID, texture)
 	REGIST_FUNC5(glFramebufferTexture2D, GLenum, target, GLenum, attachment, GLenum, textarget, ObjectID, texture, GLint, level);
 	REGIST_FUNC9(glTexImage2D,GLenum, target, GLint, level, GLint, internalformat, GLsizei, width, GLsizei, height, GLint, border, GLenum, format, GLenum, type, const void*, pixels)
 
 	REGIST_FUNC4(glShaderSource,ObjectID, shader, GLsizei, count, const GLchar* const*, string, const GLint*, length)
 	REGIST_FUNC1(glCompileShader, ObjectID, shader)
 	REGIST_FUNC3(glGetShaderiv, ObjectID, shader, GLenum, pname, GLint*, params)
-	REGIST_FUNC2(glAttachShader,ObjectID, program, ObjectID, shader);
-	REGIST_FUNC1(glLinkProgram,ObjectID, program);
+	REGIST_FUNC3(glGetProgramiv, ObjectID, shader, GLenum, pname, GLint*, params)
+	REGIST_FUNC2(glAttachShader,ObjectID, program, ObjectID, shader)
+	REGIST_FUNC1(glLinkProgram,ObjectID, program)
+	REGIST_FUNC1(glUseProgram, ObjectID, program)
 
 	void* allocateBufferMemory(size_t size) {
 		uint32_t intCnt = uint32_t(size + 3) / sizeof(uint32_t);

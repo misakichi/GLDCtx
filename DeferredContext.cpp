@@ -1,5 +1,7 @@
 #include "DeferredContext.h"
 
+
+
 CDeferredContext::CDeferredContext()
 	: m_bufferStart(nullptr)
 	, m_bufferEnd(nullptr)
@@ -63,8 +65,25 @@ template<> inline GLboolean readValue<GLboolean>(uint32_t*& buffer) { return (GL
 //無変換オーバーロード
 template<typename T> inline T readValue(uint32_t*& buffer) { return readValue<T, T>(buffer); }
 
+constexpr GLenum TypeToGLType[(int)Type::Num] = {
+	GL_NONE,
+	GL_HALF_FLOAT,
+	GL_FLOAT,
+	GL_BYTE,
+	GL_SHORT,
+	GL_INT,
+	GL_UNSIGNED_BYTE,
+	GL_UNSIGNED_SHORT,
+	GL_UNSIGNED_INT,
+};
+
 //特殊型対応特殊化
-template<> inline GLuint readValue<ObjectID>(uint32_t*& buffer) { return readValue<ObjectID>(buffer)->id; }
+template<> inline GLuint readValue<ObjectID>(uint32_t*& buffer) { 
+	auto obj = readValue<ObjectID>(buffer);
+	return obj->id; 
+}
+template<> inline GLuint readValue<Type>(uint32_t*& buffer) { return TypeToGLType[(int)readValue<Type>(buffer)]; }
+template<> inline GLuint readValue<PrimitiveType>(uint32_t*& buffer) { return (GLenum)readValue<PrimitiveType>(buffer); }
 template<> inline GLenum readValue<BufferTarget>(uint32_t*& buffer) { return (GLenum)readValue<BufferTarget>(buffer); }
 
 template<typename... TYPES, typename... TYPES2>
@@ -147,7 +166,7 @@ void callFunction(uint32_t*& buffer, void (*func)(GLsizei, GLuint*), void (CDefe
 	auto genObj = (GLuint*)alloca(sizeof(GLuint) * n);
 	func(n, genObj);
 	for (int i = 0; i < n; i++) {
-		objDst[i]->id = n;
+		objDst[i]->id = genObj[i];
 	}
 }
 //for deleteObject
@@ -174,15 +193,15 @@ void CDeferredContext::submit()
 		auto cmd = DeferredCommand(*p++);
 		switch (cmd)
 		{
-			CASE_GL_CALL(glBindBuffer)
-				CASE_GL_CALL(glBufferData)
-				CASE_GL_CALL(glBufferSubData)
+		CASE_GL_CALL(glBindBuffer)
+		CASE_GL_CALL(glBufferData)
+		CASE_GL_CALL(glBufferSubData)
 
-				CASE_GL_CALL(glClear)
-				CASE_GL_CALL(glClearColor)
-				CASE_GL_CALL(glClearDepthf)
-				CASE_GL_CALL(glClearStencil)
-				CASE_GL_CALL(glColorMask)
+		CASE_GL_CALL(glClear)
+		CASE_GL_CALL(glClearColor)
+		CASE_GL_CALL(glClearDepthf)
+		CASE_GL_CALL(glClearStencil)
+		CASE_GL_CALL(glColorMask)
 
 		case DeferredCommand::glCreateProgram:
 			{
@@ -209,6 +228,12 @@ void CDeferredContext::submit()
 		CASE_GL_CALL(glGenFramebuffers)
 		CASE_GL_CALL(glGenTextures)
 
+		CASE_GL_CALL(glVertexAttribPointer)
+		CASE_GL_CALL(glEnableVertexAttribArray)
+		CASE_GL_CALL(glDisableVertexAttribArray)
+
+		CASE_GL_CALL(glDrawArrays)
+
 		CASE_GL_CALL(glBindFramebuffer)
 		CASE_GL_CALL(glBindTexture)
 
@@ -219,8 +244,10 @@ void CDeferredContext::submit()
 		CASE_GL_CALL(glShaderSource)
 		CASE_GL_CALL(glCompileShader)
 		CASE_GL_CALL(glGetShaderiv)
+		CASE_GL_CALL(glGetProgramiv)
 		CASE_GL_CALL(glAttachShader)
 		CASE_GL_CALL(glLinkProgram)
+		CASE_GL_CALL(glUseProgram)
 
 		case DeferredCommand::allocateBufferMemory:
 		{
